@@ -143,5 +143,7 @@ From the new window, the PDF can be viewed, downloaded and/or printed.
 
 
 <hr>
+
 ### important notes:
-The file uploaded by the read_solicitation() function MUST be in the root directory of the app. 
+
+The file uploaded by the read_solicitation() function MUST be in the root directory of the app.
