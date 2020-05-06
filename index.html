@@ -1,0 +1,255 @@
+<!-- This page was built by Doug Billings and Jordan Fischer -->
+
+<!DOCTYPE html>
+<html id="page">
+<head>
+<meta charset="UTF-8">
+<title>XHTTP API example</title>
+
+<link rel="stylesheet" href="static/bootstrap.min.css">
+<script src="static/jquery.min.js"></script>
+<script src="static/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+function extract_text() {
+   var url = location.origin + "/upload?file=" + document.getElementById("myFile").files[0].name; 
+   console.log(url)
+   var xhttp = new XMLHttpRequest();
+   console.log("this is location.origin:", location.origin);
+   xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         // console.log(this.responseText);
+         document.getElementById("description").innerHTML = this.responseText;
+      }
+   };
+   xhttp.open("GET", url, true);
+   xhttp.send();
+}
+
+
+function run_model() {
+   var url = location.origin + "/model?text=" + document.getElementById("description").value; 
+   console.log(url)
+   var xhttp = new XMLHttpRequest();
+   console.log("this is location.origin:", location.origin);
+   xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         // console.log(this.responseText);
+         document.getElementById("displayresults").innerHTML = this.responseText;
+      }
+   };
+   xhttp.open("GET", url, true);
+   xhttp.send();
+}
+
+
+function make_pdf_api() {
+   var url = location.origin + "/pdf" ;
+   console.log(url)
+   var xhttp = new XMLHttpRequest();
+   xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         var file = new Blob([this.responseText], {type: 'application/pdf'});
+         var fileURL = URL.createObjectURL(file);
+         window.open(fileURL);
+      }
+   };
+   // Report content:
+   var payload= "<h1> THIS IS A NEW REPORT";
+   payload += "</h1>";
+   payload += "<h3> It shows the text extracted from the uploaded document and run through the dummy model (which just makes text lowercase)";
+   // payload += document.getElementById("myFile").files[0].name;
+   payload += " in the space below: </h3>"
+   payload += "<br>";
+   // payload += document.getElementById("description").value
+   payload += document.getElementById("displayresults").innerHTML
+   xhttp.open("POST", url, true);
+   xhttp.send(payload);
+}
+
+
+</script>
+
+
+<style>
+body {
+   background-color: rgb(255, 255, 255);
+   color: rgb(27, 27, 27);
+}
+h1 {
+   color: rgb(70, 70, 70);
+}
+h2 {
+   color: rgb(32, 32, 32);
+}
+a {
+   color: #0056b3;
+}
+input {
+   background-color: rgb(240, 239, 239);
+   color: rgb(0, 0, 0);
+}
+textarea {
+   background-color: rgb(240, 239, 239);
+   color: black;
+}
+.topnav {
+  background-color: #0056b3;
+  color: white;
+  overflow: hidden;
+  padding: 10px;
+  justify-content: space-between;
+  vertical-align: center;
+  align-items: center;
+  text-align: center;
+  font-size: 35px;
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: relative;
+    /* z-index: 8888; Sit on top */
+    /* left: 0;
+    top: 0; */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10vh auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%; /* Could be more or less, depending on screen size */
+    position: absolute;
+}
+@media (min-width: 1366px) {
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10vh auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%; /* Could be more or less, depending on screen size */
+	}
+}
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    vertical-align: top;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    cursor: pointer;
+}
+button.button {
+ 	background:none;
+    border-radius: 50%;
+  font-size:16px;
+}
+button.button:hover {
+  border-bottom:#a99567 1px solid;
+  color:#a99567;
+}
+textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 250px 575px auto;
+  padding-bottom: 15px;
+}
+</style>
+</head>
+
+<body>
+<div class="topnav">
+   <!-- <img src="static/ibm_logo_white.png" alt="IBM logo" width="90px" style="float:left;vertical-align:center;margin-top:7px">  -->
+   API EXAMPLES
+</div>
+
+<div style="margin-left: 20px; margin-top: 10px; margin-right: 20px;">
+      <!-- <br> -->
+      <div >
+         <h5 align="center"> This web app runs a python script on a selected document at the click of a button, displays the results of the script in the UI, and exports these results into a new PDF report.</h5>
+         <br>
+      </div>
+      <div class="grid-container">
+      <div><span style="vertical-align: top;">Project Description:<span style="color: #ff1717;">*</span>
+         <button class="button" data-modal="info_proj_desc" style="font-size: 8pt;">?</button></span>
+         <div id="info_proj_desc" class="modal" style="position: fixed;">
+            <div class="modal-content">
+              <div class="contact-form">
+                <span class="close">&times;</span>
+                This field will automatically populate if you uploaded a solicitation.<br>
+              </div>
+            </div>
+         </div></div>
+      <div style="float: center; justify-content: center; align-items: center;">
+
+         <!-- USING XHTTP -->
+         <form >
+            <input type="file" id="myFile" name="solicitation_name">
+            <input class="btn btn-primary"
+            value="Extract relevant text"
+            onclick="extract_text()"
+            style="float:right; padding:2px; cursor: pointer;">
+         </form>
+      </div>
+
+      </div>
+
+
+
+
+
+
+      <div class="">
+            <textarea placeholder="Enter search terms or project description here" id="description" rows=10 cols=150></textarea>
+      </div>
+
+      <input class="btn btn-primary" value="Run model" onclick="run_model()" style="cursor: pointer;">
+      <br>
+      <div class="" id="displayresults"> </div>
+<br>
+      <input class="btn btn-primary" value="Download PDF of results" onclick="make_pdf_api()" style="cursor: pointer;">
+
+<hr>
+
+
+<script>
+   var modalBtns = [...document.querySelectorAll(".button")];
+modalBtns.forEach(function(btn){
+  btn.onclick = function() {
+    var modal = btn.getAttribute('data-modal');
+    document.getElementById(modal).style.display = "block";
+  }
+});
+var closeBtns = [...document.querySelectorAll(".close")];
+closeBtns.forEach(function(btn){
+  btn.onclick = function() {
+    var modal = btn.closest('.modal');
+    modal.style.display = "none";
+  }
+});
+window.onclick = function(event) {
+  if (event.target.className === "modal") {
+    event.target.style.display = "none";
+  }
+}
+</script>
+<br>
+
+</body>
+</html>
